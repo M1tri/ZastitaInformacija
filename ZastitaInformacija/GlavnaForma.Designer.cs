@@ -1,0 +1,575 @@
+﻿
+namespace ZastitaInformacija
+{
+    partial class GlavnaForma
+    {
+        /// <summary>
+        ///  Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        ///  Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        ///  Required method for Designer support - do not modify
+        ///  the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            components = new System.ComponentModel.Container();
+            groupBox1 = new GroupBox();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            groupBox2 = new GroupBox();
+            groupBox8 = new GroupBox();
+            tableLayoutPanel8 = new TableLayoutPanel();
+            chkBoxSifriraj = new CheckBox();
+            chkBoxHesiraj = new CheckBox();
+            tableLayoutPanel4 = new TableLayoutPanel();
+            groupBoxHesiranje = new GroupBox();
+            label2 = new Label();
+            groupBoxSifriranje = new GroupBox();
+            tableLayoutPanel2 = new TableLayoutPanel();
+            radioPlayfair = new RadioButton();
+            radioRC6 = new RadioButton();
+            radioPCBC = new RadioButton();
+            groupBox3 = new GroupBox();
+            tableLayoutPanel6 = new TableLayoutPanel();
+            groupBox7 = new GroupBox();
+            tableLayoutPanel5 = new TableLayoutPanel();
+            txtBoxIzlazniDir = new TextBox();
+            dugmeIzlazniDir = new Button();
+            groupBox6 = new GroupBox();
+            tableLayoutPanel3 = new TableLayoutPanel();
+            txtBoxIzabraniDir = new TextBox();
+            dugmePosmatraniDir = new Button();
+            tableLayoutPanel7 = new TableLayoutPanel();
+            dugmeUpaliFSW = new Button();
+            dugmeIsključiFSW = new Button();
+            toolTipDugmeIzabraniDir = new ToolTip(components);
+            groupBox4 = new GroupBox();
+            logTextBox = new RichTextBox();
+            groupBox5 = new GroupBox();
+            tableLayoutPanel9 = new TableLayoutPanel();
+            dugmeRucniRad = new Button();
+            dugmeRazmena = new Button();
+            groupBox1.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox8.SuspendLayout();
+            tableLayoutPanel8.SuspendLayout();
+            tableLayoutPanel4.SuspendLayout();
+            groupBoxHesiranje.SuspendLayout();
+            groupBoxSifriranje.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
+            groupBox3.SuspendLayout();
+            tableLayoutPanel6.SuspendLayout();
+            groupBox7.SuspendLayout();
+            tableLayoutPanel5.SuspendLayout();
+            groupBox6.SuspendLayout();
+            tableLayoutPanel3.SuspendLayout();
+            tableLayoutPanel7.SuspendLayout();
+            groupBox4.SuspendLayout();
+            groupBox5.SuspendLayout();
+            tableLayoutPanel9.SuspendLayout();
+            SuspendLayout();
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(tableLayoutPanel1);
+            groupBox1.Location = new Point(511, 13);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(277, 477);
+            groupBox1.TabIndex = 4;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Podešavanja";
+            // 
+            // tableLayoutPanel1
+            // 
+            tableLayoutPanel1.ColumnCount = 1;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.Controls.Add(groupBox2, 0, 0);
+            tableLayoutPanel1.Controls.Add(groupBox3, 0, 1);
+            tableLayoutPanel1.Location = new Point(6, 22);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel1.Size = new Size(265, 448);
+            tableLayoutPanel1.TabIndex = 0;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(groupBox8);
+            groupBox2.Controls.Add(tableLayoutPanel4);
+            groupBox2.Location = new Point(3, 3);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(259, 218);
+            groupBox2.TabIndex = 0;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Algoritmi";
+            // 
+            // groupBox8
+            // 
+            groupBox8.Controls.Add(tableLayoutPanel8);
+            groupBox8.Location = new Point(6, 150);
+            groupBox8.Name = "groupBox8";
+            groupBox8.Size = new Size(247, 62);
+            groupBox8.TabIndex = 1;
+            groupBox8.TabStop = false;
+            groupBox8.Text = "Aktivne radnje";
+            // 
+            // tableLayoutPanel8
+            // 
+            tableLayoutPanel8.ColumnCount = 2;
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel8.Controls.Add(chkBoxSifriraj, 0, 0);
+            tableLayoutPanel8.Controls.Add(chkBoxHesiraj, 1, 0);
+            tableLayoutPanel8.Location = new Point(6, 22);
+            tableLayoutPanel8.Name = "tableLayoutPanel8";
+            tableLayoutPanel8.RowCount = 1;
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel8.Size = new Size(235, 40);
+            tableLayoutPanel8.TabIndex = 1;
+            // 
+            // chkBoxSifriraj
+            // 
+            chkBoxSifriraj.Anchor = AnchorStyles.None;
+            chkBoxSifriraj.AutoSize = true;
+            chkBoxSifriraj.Checked = true;
+            chkBoxSifriraj.CheckState = CheckState.Checked;
+            chkBoxSifriraj.Location = new Point(29, 10);
+            chkBoxSifriraj.Name = "chkBoxSifriraj";
+            chkBoxSifriraj.Size = new Size(59, 19);
+            chkBoxSifriraj.TabIndex = 0;
+            chkBoxSifriraj.Text = "Sifriraj";
+            chkBoxSifriraj.UseVisualStyleBackColor = true;
+            chkBoxSifriraj.CheckedChanged += chkBoxSifriraj_CheckedChanged;
+            // 
+            // chkBoxHesiraj
+            // 
+            chkBoxHesiraj.Anchor = AnchorStyles.None;
+            chkBoxHesiraj.AutoSize = true;
+            chkBoxHesiraj.Location = new Point(145, 10);
+            chkBoxHesiraj.Name = "chkBoxHesiraj";
+            chkBoxHesiraj.Size = new Size(62, 19);
+            chkBoxHesiraj.TabIndex = 1;
+            chkBoxHesiraj.Text = "Heširaj";
+            chkBoxHesiraj.UseVisualStyleBackColor = true;
+            chkBoxHesiraj.CheckedChanged += chkBoxHesiraj_CheckedChanged;
+            // 
+            // tableLayoutPanel4
+            // 
+            tableLayoutPanel4.ColumnCount = 2;
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
+            tableLayoutPanel4.Controls.Add(groupBoxHesiranje, 1, 0);
+            tableLayoutPanel4.Controls.Add(groupBoxSifriranje, 0, 0);
+            tableLayoutPanel4.Location = new Point(3, 22);
+            tableLayoutPanel4.Name = "tableLayoutPanel4";
+            tableLayoutPanel4.RowCount = 1;
+            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel4.Size = new Size(250, 122);
+            tableLayoutPanel4.TabIndex = 0;
+            // 
+            // groupBoxHesiranje
+            // 
+            groupBoxHesiranje.Controls.Add(label2);
+            groupBoxHesiranje.Enabled = false;
+            groupBoxHesiranje.Location = new Point(153, 3);
+            groupBoxHesiranje.Name = "groupBoxHesiranje";
+            groupBoxHesiranje.Size = new Size(88, 116);
+            groupBoxHesiranje.TabIndex = 1;
+            groupBoxHesiranje.TabStop = false;
+            groupBoxHesiranje.Text = "Heširanje";
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.None;
+            label2.AutoSize = true;
+            label2.Location = new Point(24, 56);
+            label2.Name = "label2";
+            label2.Size = new Size(39, 15);
+            label2.TabIndex = 0;
+            label2.Text = "SHA 1";
+            // 
+            // groupBoxSifriranje
+            // 
+            groupBoxSifriranje.Controls.Add(tableLayoutPanel2);
+            groupBoxSifriranje.Location = new Point(3, 3);
+            groupBoxSifriranje.Name = "groupBoxSifriranje";
+            groupBoxSifriranje.Size = new Size(144, 116);
+            groupBoxSifriranje.TabIndex = 2;
+            groupBoxSifriranje.TabStop = false;
+            groupBoxSifriranje.Text = "Šifriranje";
+            // 
+            // tableLayoutPanel2
+            // 
+            tableLayoutPanel2.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel2.ColumnCount = 1;
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel2.Controls.Add(radioPlayfair, 0, 0);
+            tableLayoutPanel2.Controls.Add(radioRC6, 0, 1);
+            tableLayoutPanel2.Controls.Add(radioPCBC, 0, 2);
+            tableLayoutPanel2.Location = new Point(3, 21);
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 3;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel2.Size = new Size(135, 89);
+            tableLayoutPanel2.TabIndex = 0;
+            // 
+            // radioPlayfair
+            // 
+            radioPlayfair.Anchor = AnchorStyles.Left;
+            radioPlayfair.AutoSize = true;
+            radioPlayfair.Checked = true;
+            radioPlayfair.Location = new Point(3, 4);
+            radioPlayfair.Name = "radioPlayfair";
+            radioPlayfair.Padding = new Padding(10, 1, 1, 1);
+            radioPlayfair.RightToLeft = RightToLeft.No;
+            radioPlayfair.Size = new Size(111, 21);
+            radioPlayfair.TabIndex = 0;
+            radioPlayfair.TabStop = true;
+            radioPlayfair.Text = "Playfair cipher";
+            radioPlayfair.UseVisualStyleBackColor = true;
+            radioPlayfair.CheckedChanged += radioPlayfair_CheckedChanged;
+            // 
+            // radioRC6
+            // 
+            radioRC6.Anchor = AnchorStyles.Left;
+            radioRC6.AutoSize = true;
+            radioRC6.Location = new Point(3, 33);
+            radioRC6.Name = "radioRC6";
+            radioRC6.Padding = new Padding(10, 1, 1, 1);
+            radioRC6.Size = new Size(57, 21);
+            radioRC6.TabIndex = 1;
+            radioRC6.Text = "RC6";
+            radioRC6.UseVisualStyleBackColor = true;
+            radioRC6.CheckedChanged += radioRC6_CheckedChanged;
+            // 
+            // radioPCBC
+            // 
+            radioPCBC.Anchor = AnchorStyles.Left;
+            radioPCBC.AutoSize = true;
+            radioPCBC.Location = new Point(3, 63);
+            radioPCBC.Name = "radioPCBC";
+            radioPCBC.Padding = new Padding(10, 1, 1, 1);
+            radioPCBC.Size = new Size(66, 21);
+            radioPCBC.TabIndex = 2;
+            radioPCBC.Text = "PCBC";
+            radioPCBC.UseVisualStyleBackColor = true;
+            radioPCBC.CheckedChanged += radioPCBC_CheckedChanged;
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(tableLayoutPanel6);
+            groupBox3.Location = new Point(3, 227);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(259, 218);
+            groupBox3.TabIndex = 1;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "File System Watcher";
+            // 
+            // tableLayoutPanel6
+            // 
+            tableLayoutPanel6.ColumnCount = 1;
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel6.Controls.Add(groupBox7, 0, 1);
+            tableLayoutPanel6.Controls.Add(groupBox6, 0, 0);
+            tableLayoutPanel6.Controls.Add(tableLayoutPanel7, 0, 2);
+            tableLayoutPanel6.Location = new Point(3, 19);
+            tableLayoutPanel6.Name = "tableLayoutPanel6";
+            tableLayoutPanel6.RowCount = 3;
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 37.5F));
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 37.5F));
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            tableLayoutPanel6.Size = new Size(250, 193);
+            tableLayoutPanel6.TabIndex = 0;
+            // 
+            // groupBox7
+            // 
+            groupBox7.Controls.Add(tableLayoutPanel5);
+            groupBox7.Location = new Point(3, 75);
+            groupBox7.Name = "groupBox7";
+            groupBox7.Size = new Size(244, 57);
+            groupBox7.TabIndex = 2;
+            groupBox7.TabStop = false;
+            groupBox7.Text = "Izlazni direktorijum";
+            // 
+            // tableLayoutPanel5
+            // 
+            tableLayoutPanel5.ColumnCount = 2;
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 85F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 15F));
+            tableLayoutPanel5.Controls.Add(txtBoxIzlazniDir, 0, 0);
+            tableLayoutPanel5.Controls.Add(dugmeIzlazniDir, 1, 0);
+            tableLayoutPanel5.Location = new Point(3, 19);
+            tableLayoutPanel5.Name = "tableLayoutPanel5";
+            tableLayoutPanel5.RowCount = 1;
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel5.Size = new Size(235, 32);
+            tableLayoutPanel5.TabIndex = 0;
+            // 
+            // txtBoxIzlazniDir
+            // 
+            txtBoxIzlazniDir.Anchor = AnchorStyles.None;
+            txtBoxIzlazniDir.Location = new Point(4, 4);
+            txtBoxIzlazniDir.Name = "txtBoxIzlazniDir";
+            txtBoxIzlazniDir.ReadOnly = true;
+            txtBoxIzlazniDir.Size = new Size(191, 23);
+            txtBoxIzlazniDir.TabIndex = 5;
+            // 
+            // dugmeIzlazniDir
+            // 
+            dugmeIzlazniDir.Anchor = AnchorStyles.None;
+            dugmeIzlazniDir.Location = new Point(202, 4);
+            dugmeIzlazniDir.Name = "dugmeIzlazniDir";
+            dugmeIzlazniDir.Size = new Size(29, 23);
+            dugmeIzlazniDir.TabIndex = 6;
+            dugmeIzlazniDir.Text = "...";
+            dugmeIzlazniDir.UseVisualStyleBackColor = true;
+            dugmeIzlazniDir.Click += dugmeIzlazniDir_Click;
+            // 
+            // groupBox6
+            // 
+            groupBox6.Controls.Add(tableLayoutPanel3);
+            groupBox6.Location = new Point(3, 3);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new Size(244, 57);
+            groupBox6.TabIndex = 1;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "Posmatrani direktorijum";
+            // 
+            // tableLayoutPanel3
+            // 
+            tableLayoutPanel3.ColumnCount = 2;
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 85F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 15F));
+            tableLayoutPanel3.Controls.Add(txtBoxIzabraniDir, 0, 0);
+            tableLayoutPanel3.Controls.Add(dugmePosmatraniDir, 1, 0);
+            tableLayoutPanel3.Location = new Point(0, 22);
+            tableLayoutPanel3.Name = "tableLayoutPanel3";
+            tableLayoutPanel3.RowCount = 1;
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel3.Size = new Size(241, 29);
+            tableLayoutPanel3.TabIndex = 0;
+            // 
+            // txtBoxIzabraniDir
+            // 
+            txtBoxIzabraniDir.Anchor = AnchorStyles.None;
+            txtBoxIzabraniDir.Location = new Point(6, 3);
+            txtBoxIzabraniDir.Name = "txtBoxIzabraniDir";
+            txtBoxIzabraniDir.ReadOnly = true;
+            txtBoxIzabraniDir.Size = new Size(191, 23);
+            txtBoxIzabraniDir.TabIndex = 0;
+            // 
+            // dugmePosmatraniDir
+            // 
+            dugmePosmatraniDir.Anchor = AnchorStyles.None;
+            dugmePosmatraniDir.Location = new Point(208, 3);
+            dugmePosmatraniDir.Name = "dugmePosmatraniDir";
+            dugmePosmatraniDir.Size = new Size(29, 23);
+            dugmePosmatraniDir.TabIndex = 1;
+            dugmePosmatraniDir.Text = "...";
+            dugmePosmatraniDir.UseVisualStyleBackColor = true;
+            dugmePosmatraniDir.Click += dugmePosmatraniDir_Click;
+            // 
+            // tableLayoutPanel7
+            // 
+            tableLayoutPanel7.ColumnCount = 2;
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.Controls.Add(dugmeUpaliFSW, 0, 0);
+            tableLayoutPanel7.Controls.Add(dugmeIsključiFSW, 1, 0);
+            tableLayoutPanel7.Location = new Point(3, 147);
+            tableLayoutPanel7.Name = "tableLayoutPanel7";
+            tableLayoutPanel7.RowCount = 1;
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel7.Size = new Size(244, 36);
+            tableLayoutPanel7.TabIndex = 3;
+            // 
+            // dugmeUpaliFSW
+            // 
+            dugmeUpaliFSW.Anchor = AnchorStyles.None;
+            dugmeUpaliFSW.Location = new Point(23, 6);
+            dugmeUpaliFSW.Name = "dugmeUpaliFSW";
+            dugmeUpaliFSW.Size = new Size(75, 23);
+            dugmeUpaliFSW.TabIndex = 0;
+            dugmeUpaliFSW.Text = "Uključi";
+            dugmeUpaliFSW.UseVisualStyleBackColor = true;
+            dugmeUpaliFSW.Click += dugmeUpaliFSW_Click;
+            // 
+            // dugmeIsključiFSW
+            // 
+            dugmeIsključiFSW.Anchor = AnchorStyles.None;
+            dugmeIsključiFSW.Enabled = false;
+            dugmeIsključiFSW.Location = new Point(145, 6);
+            dugmeIsključiFSW.Name = "dugmeIsključiFSW";
+            dugmeIsključiFSW.Size = new Size(75, 23);
+            dugmeIsključiFSW.TabIndex = 1;
+            dugmeIsključiFSW.Text = "Isključi";
+            dugmeIsključiFSW.UseVisualStyleBackColor = true;
+            dugmeIsključiFSW.Click += dugmeIsključiFSW_Click;
+            // 
+            // groupBox4
+            // 
+            groupBox4.Controls.Add(logTextBox);
+            groupBox4.Location = new Point(0, 0);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(511, 443);
+            groupBox4.TabIndex = 5;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Log";
+            // 
+            // logTextBox
+            // 
+            logTextBox.Cursor = Cursors.Hand;
+            logTextBox.Location = new Point(3, 19);
+            logTextBox.Name = "logTextBox";
+            logTextBox.ReadOnly = true;
+            logTextBox.Size = new Size(502, 414);
+            logTextBox.TabIndex = 0;
+            logTextBox.Text = "";
+            // 
+            // groupBox5
+            // 
+            groupBox5.Controls.Add(tableLayoutPanel9);
+            groupBox5.Location = new Point(3, 442);
+            groupBox5.Name = "groupBox5";
+            groupBox5.Size = new Size(502, 48);
+            groupBox5.TabIndex = 2;
+            groupBox5.TabStop = false;
+            groupBox5.Text = "Dodatne mogućnosti";
+            // 
+            // tableLayoutPanel9
+            // 
+            tableLayoutPanel9.ColumnCount = 2;
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.Controls.Add(dugmeRucniRad, 0, 0);
+            tableLayoutPanel9.Controls.Add(dugmeRazmena, 1, 0);
+            tableLayoutPanel9.Location = new Point(3, 19);
+            tableLayoutPanel9.Name = "tableLayoutPanel9";
+            tableLayoutPanel9.RowCount = 1;
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel9.Size = new Size(493, 29);
+            tableLayoutPanel9.TabIndex = 0;
+            // 
+            // dugmeRucniRad
+            // 
+            dugmeRucniRad.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            dugmeRucniRad.Location = new Point(3, 3);
+            dugmeRucniRad.Name = "dugmeRucniRad";
+            dugmeRucniRad.Size = new Size(239, 23);
+            dugmeRucniRad.TabIndex = 0;
+            dugmeRucniRad.Text = "Rucni rad sa fajlovima";
+            dugmeRucniRad.UseVisualStyleBackColor = true;
+            dugmeRucniRad.Click += dugmeRucniRad_Click;
+            // 
+            // dugmeRazmena
+            // 
+            dugmeRazmena.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            dugmeRazmena.Location = new Point(249, 3);
+            dugmeRazmena.Name = "dugmeRazmena";
+            dugmeRazmena.Size = new Size(241, 23);
+            dugmeRazmena.TabIndex = 1;
+            dugmeRazmena.Text = "Razmena fajlova na daljinu";
+            dugmeRazmena.UseVisualStyleBackColor = true;
+            // 
+            // GlavnaForma
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 495);
+            Controls.Add(groupBox4);
+            Controls.Add(groupBox1);
+            Controls.Add(groupBox5);
+            Name = "GlavnaForma";
+            Text = "Zastita Informacija";
+            FormClosing += GlavnaForma_FormClosing;
+            groupBox1.ResumeLayout(false);
+            tableLayoutPanel1.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
+            groupBox8.ResumeLayout(false);
+            tableLayoutPanel8.ResumeLayout(false);
+            tableLayoutPanel8.PerformLayout();
+            tableLayoutPanel4.ResumeLayout(false);
+            groupBoxHesiranje.ResumeLayout(false);
+            groupBoxHesiranje.PerformLayout();
+            groupBoxSifriranje.ResumeLayout(false);
+            tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel2.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            tableLayoutPanel6.ResumeLayout(false);
+            groupBox7.ResumeLayout(false);
+            tableLayoutPanel5.ResumeLayout(false);
+            tableLayoutPanel5.PerformLayout();
+            groupBox6.ResumeLayout(false);
+            tableLayoutPanel3.ResumeLayout(false);
+            tableLayoutPanel3.PerformLayout();
+            tableLayoutPanel7.ResumeLayout(false);
+            groupBox4.ResumeLayout(false);
+            groupBox5.ResumeLayout(false);
+            tableLayoutPanel9.ResumeLayout(false);
+            ResumeLayout(false);
+        }
+
+        #endregion
+        private GroupBox groupBox1;
+        private TableLayoutPanel tableLayoutPanel1;
+        private GroupBox groupBox2;
+        private TableLayoutPanel tableLayoutPanel2;
+        private RadioButton radioPlayfair;
+        private RadioButton radioRC6;
+        private RadioButton radioPCBC;
+        private GroupBox groupBox3;
+        private TableLayoutPanel tableLayoutPanel3;
+        private TableLayoutPanel tableLayoutPanel4;
+        private GroupBox groupBoxHesiranje;
+        private Label label2;
+        private GroupBox groupBoxSifriranje;
+        private ToolTip toolTipDugmeIzabraniDir;
+        private TextBox txtBoxIzabraniDir;
+        private Button dugmePosmatraniDir;
+        private GroupBox groupBox6;
+        private GroupBox groupBox7;
+        private TableLayoutPanel tableLayoutPanel5;
+        private TextBox txtBoxIzlazniDir;
+        private Button dugmeIzlazniDir;
+        private TableLayoutPanel tableLayoutPanel6;
+        private TableLayoutPanel tableLayoutPanel7;
+        private Button dugmeUpaliFSW;
+        private Button dugmeIsključiFSW;
+        private TableLayoutPanel tableLayoutPanel8;
+        private CheckBox chkBoxSifriraj;
+        private CheckBox chkBoxHesiraj;
+        private GroupBox groupBox4;
+        private RichTextBox logTextBox;
+        private GroupBox groupBox5;
+        private GroupBox groupBox8;
+        private TableLayoutPanel tableLayoutPanel9;
+        private Button dugmeRucniRad;
+        private Button dugmeRazmena;
+    }
+}
