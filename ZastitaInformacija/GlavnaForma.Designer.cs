@@ -496,6 +496,7 @@ namespace ZastitaInformacija
             dugmeRazmena.TabIndex = 1;
             dugmeRazmena.Text = "Razmena fajlova na daljinu";
             dugmeRazmena.UseVisualStyleBackColor = true;
+            dugmeRazmena.Click += dugmeRazmena_Click;
             // 
             // GlavnaForma
             // 

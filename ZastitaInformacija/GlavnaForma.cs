@@ -9,8 +9,7 @@ namespace ZastitaInformacija
     {
         PLAYFAIR = 0,
         RC6 = 1,
-        PCBC = 2,
-        SHA1 = 3
+        PCBC = 2
     };
 
     public partial class GlavnaForma : Form
@@ -64,7 +63,7 @@ namespace ZastitaInformacija
         {
             try
             {
-                SelectedCypher.EncryptFile(path, outPath);
+                SelectedCypher.EncryptFile(path, chkBoxHesiraj.Checked, outPath);
             }
             catch (CypherException ce)
             {
@@ -369,13 +368,19 @@ namespace ZastitaInformacija
         private void GlavnaForma_FormClosing(object sender, FormClosingEventArgs e)
         {
             string time = DateTime.Now.ToString("yyyy-mm-dd_HH-mm--ss");
-            string logName = "log_" +time+ ".txt";
+            string logName = "log_" + time + ".txt";
             string dir = Directory.GetCurrentDirectory();
 
             string logPath = Path.Combine(dir, logName);
             UpisiULog($"Gašenje aplikacije, log upisan fajlu na putanji {logPath}");
 
-//            File.WriteAllText(logPath, logTextBox.Text);
+            //            File.WriteAllText(logPath, logTextBox.Text);
+        }
+
+        private void dugmeRazmena_Click(object sender, EventArgs e)
+        {
+            FormaSifriranjeSocketi forma = new FormaSifriranjeSocketi(playFairCypher, rc6, pcbc);
+            forma.Show();
         }
     }
 }

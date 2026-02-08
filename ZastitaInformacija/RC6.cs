@@ -18,7 +18,7 @@ namespace ZastitaInformacija
             KeySchedule(key);
         }
 
-        public string EncryptFile(string filePath, string? outDir = null)
+        public string EncryptFile(string filePath, bool hash = false, string? outDir = null)
         {
             byte[] data = File.ReadAllBytes(filePath);
 
@@ -28,11 +28,12 @@ namespace ZastitaInformacija
                 FileSize = data.Length,
                 CreationTime = DateTime.Now,
                 EncryptionAlgorithm = "RC6",
-                HashAlgorithm = "None I guess"
+                HashAlgorithm = hash ? "SHA1" : ""
             };
 
             byte[] encrypted = Encrypt(data, fileMetaData);
-            
+            byte[] hashBytes = SHA1.Hash(encrypted);
+
             string dir = Path.GetDirectoryName(filePath)!;
             string outFileDir = outDir ?? dir;
 
@@ -49,6 +50,11 @@ namespace ZastitaInformacija
             {
                 bw.Write(metaBytes.Length);
                 bw.Write(metaBytes);
+                if (hash)
+                {
+                    bw.Write(hashBytes.Length);
+                    bw.Write(hashBytes);
+                }
                 bw.Write(encrypted);
             }
 
@@ -89,13 +95,15 @@ namespace ZastitaInformacija
             return encrypted;
         }
 
-        public virtual string DecryptFile(string filePath, string? outDir = null)
+        public virtual string DecryptFile(string filePath, bool hash = false, string? outDir = null)
         {
             string ext = Path.GetExtension(filePath);
             if (ext != extension)
                 throw new CypherException($"Neočekivana ekstenzija, očekivano .pfc a data ekstenzija je {ext}");
 
             byte[] data;
+            byte[] hashBytes = null;
+            bool hashed = false;
             FileMetaData fileMetaData;
             using (FileStream fs = new FileStream(filePath, FileMode.Open))
             using (BinaryReader br = new BinaryReader(fs))
@@ -106,10 +114,24 @@ namespace ZastitaInformacija
                 string json = Encoding.UTF8.GetString(metaData);
                 fileMetaData = JsonSerializer.Deserialize<FileMetaData>(json)!;
 
+                if (fileMetaData.HashAlgorithm == "SHA1")
+                { 
+                    int len = br.ReadInt32();
+                    hashBytes = br.ReadBytes(len);
+                    hashed = true;
+                }
+
                 int ostalo = (int)(br.BaseStream.Length - br.BaseStream.Position);
                 data = br.ReadBytes(ostalo);
             }
-            
+
+            if (hashed)
+            {
+                byte[] newHash = SHA1.Hash(data);
+
+                if (Encoding.UTF8.GetString(newHash) != Encoding.UTF8.GetString(hashBytes!))
+                    throw new CypherException("Hash se ne poklapa");
+            }
             byte[] decrypted = Decrypt(data, fileMetaData);
 
             string dir = Path.GetDirectoryName(filePath)!;

@@ -152,7 +152,7 @@ namespace ZastitaInformacija
         {
             try
             {
-                string outFile = selectedCypher.EncryptFile(path, outPath);
+                string outFile = selectedCypher.EncryptFile(path, chkBoxHash.Checked, outPath);
                 string algo;
                 if (radioPlayfair.Checked)
                     algo = "Playfair cypher";
@@ -198,7 +198,7 @@ namespace ZastitaInformacija
         {
             try
             {
-                string outFile = selectedCypher.DecryptFile(path, outPath);
+                string outFile = selectedCypher.DecryptFile(path, chkBoxHash.Checked, outPath);
                 string algo;
                 if (radioPlayfair.Checked)
                     algo = "Playfair cypher";
@@ -214,8 +214,8 @@ namespace ZastitaInformacija
             catch (CypherException ce)
             {
                 MessageBox.Show(
-                    "Greška tokom dekriptovanja fajla",
                     ce.Message,
+                    "Greška tokom dekriptovanja fajla",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
@@ -223,8 +223,8 @@ namespace ZastitaInformacija
             catch (IOException iox)
             {
                 MessageBox.Show(
-                    "Greška tokom ulazno/izlazne radnje",
                     iox.Message,
+                    "Greška tokom ulazno/izlazne radnje",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
@@ -232,8 +232,8 @@ namespace ZastitaInformacija
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Greška",
                     ex.Message,
+                    "Greška",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );

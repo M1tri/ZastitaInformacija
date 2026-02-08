@@ -8,8 +8,8 @@ namespace ZastitaInformacija
 {
     interface Cypher
     {
-        string EncryptFile(string filePath, string? outDir = null);
-        string DecryptFile(string filePath, string? outDir = null);
+        string EncryptFile(string filePath, bool hash = false, string? outDir = null);
+        string DecryptFile(string filePath, bool hash = false, string? outDir = null);
 
         byte[] Encrypt(byte[] data, FileMetaData fileMetaData);
         byte[] Decrypt(byte[] data, FileMetaData fileMetaData);
