@@ -52,7 +52,6 @@ namespace ZastitaInformacija
                 bw.Write(metaBytes);
                 if (hash)
                 {
-                    bw.Write(hashBytes.Length);
                     bw.Write(hashBytes);
                 }
                 bw.Write(encrypted);
@@ -115,8 +114,8 @@ namespace ZastitaInformacija
                 fileMetaData = JsonSerializer.Deserialize<FileMetaData>(json)!;
 
                 if (fileMetaData.HashAlgorithm == "SHA1")
-                { 
-                    int len = br.ReadInt32();
+                {
+                    int len = 20;
                     hashBytes = br.ReadBytes(len);
                     hashed = true;
                 }

@@ -78,8 +78,34 @@ namespace ZastitaInformacija
                 h3 += d;
                 h4 += e;
             }
+            byte[] hash = new byte[20];
 
-            return Encoding.UTF8.GetBytes($"{h0:x8}{h1:x8}{h2:x8}{h3:x8}{h4:x8}");
+            hash[0] = (byte)(h0 >> 24);
+            hash[1] = (byte)(h0 >> 16);
+            hash[2] = (byte)(h0 >> 8);
+            hash[3] = (byte)(h0);
+
+            hash[4] = (byte)(h1 >> 24);
+            hash[5] = (byte)(h1 >> 16);
+            hash[6] = (byte)(h1 >> 8);
+            hash[7] = (byte)(h1);
+
+            hash[8] = (byte)(h2 >> 24);
+            hash[9] = (byte)(h2 >> 16);
+            hash[10] = (byte)(h2 >> 8);
+            hash[11] = (byte)(h2);
+
+            hash[12] = (byte)(h3 >> 24);
+            hash[13] = (byte)(h3 >> 16);
+            hash[14] = (byte)(h3 >> 8);
+            hash[15] = (byte)(h3);
+
+            hash[16] = (byte)(h4 >> 24);
+            hash[17] = (byte)(h4 >> 16);
+            hash[18] = (byte)(h4 >> 8);
+            hash[19] = (byte)(h4);
+
+            return hash;
         }
 
         private static byte[] AddPadding(byte[] data)

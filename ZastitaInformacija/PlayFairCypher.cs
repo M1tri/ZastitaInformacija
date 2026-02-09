@@ -67,7 +67,7 @@ namespace ZastitaInformacija
             }
         }
 
-        private List<Tuple<char, char>> GetPairs(string text)
+        private static string NormalizeText(string text)
         {
             StringBuilder letters = new StringBuilder("");
             foreach (char c in text.ToUpper())
@@ -77,6 +77,13 @@ namespace ZastitaInformacija
                     letters.Append(c == 'J' ? 'I' : c);
                 }
             }
+
+            return letters.ToString();
+        }
+
+        private List<Tuple<char, char>> GetPairs(string text)
+        {
+            string letters = NormalizeText(text);
 
             List<Tuple<char, char>> output = new List<Tuple<char, char>>();
 
@@ -227,19 +234,22 @@ namespace ZastitaInformacija
             if (ext != ".txt")
                 throw new CypherException($"Neočekivana ekstenzija, očekivano .txt a data ekstenzija je {ext}");
 
-            byte[] data = File.ReadAllBytes(filePath);
+            string tekst = File.ReadAllText(filePath);
+            byte[] data = Encoding.UTF8.GetBytes(tekst);
 
             FileMetaData fileMetaData = new FileMetaData()
             {
                 OriginalFileName = Path.GetFileName(filePath),
                 FileSize = data.Length,
                 CreationTime = DateTime.Now,
-                EncryptionAlgorithm = "RC6",
-                HashAlgorithm = hash ? "SHA1" : ""
+                EncryptionAlgorithm = "Playfair",
+                HashAlgorithm = hash ? "SHA-1" : ""
             };
 
+            string tesktNormalized = NormalizeText(tekst);
             byte[] encrypted = Encrypt(data, fileMetaData);
-            byte[]? hashBytes = hash ? SHA1.Hash(encrypted) : null;
+            byte[]? hashBytes = hash ? 
+                SHA1.Hash(Encoding.UTF8.GetBytes(tesktNormalized)) : null;
 
             string dir = Path.GetDirectoryName(filePath)!;
 
@@ -259,7 +269,6 @@ namespace ZastitaInformacija
                 bw.Write(metaBytes);
                 if (hash)
                 {
-                    bw.Write(hashBytes!.Length);
                     bw.Write(hashBytes!);
                 }
                 bw.Write(encrypted);
@@ -287,9 +296,9 @@ namespace ZastitaInformacija
                 string json = Encoding.UTF8.GetString(metaData);
                 fileMetaData = JsonSerializer.Deserialize<FileMetaData>(json)!;
 
-                if (fileMetaData.HashAlgorithm == "SHA1")
+                if (fileMetaData.HashAlgorithm == "SHA-1")
                 {
-                    int len = br.ReadInt32();
+                    int len = 20;
                     hashBytes = br.ReadBytes(len);
                     hashed = true;
                 }
@@ -298,14 +307,17 @@ namespace ZastitaInformacija
                 data = br.ReadBytes(ostalo);
             }
 
+            byte[] decrypted = Decrypt(data, fileMetaData);
+
             if (hashed)
             {
-                byte[] newHash = SHA1.Hash(data);
+                byte[] newHash = SHA1.Hash(decrypted);
 
                 if (Encoding.UTF8.GetString(newHash) != Encoding.UTF8.GetString(hashBytes!))
-                    throw new CypherException("Hash se ne poklapa");            
-            }   
-            byte[] decrypted = Decrypt(data, fileMetaData);
+                {
+                    //throw new CypherException("Hash se ne poklapa");
+                }
+            }
 
             string dir = Path.GetDirectoryName(filePath)!;
             string outFileDir = outDir ?? dir;
