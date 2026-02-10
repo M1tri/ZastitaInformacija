@@ -56,7 +56,7 @@ namespace ZastitaInformacija
                 return;
             }
 
-            m_listener = new TcpListener(ip, m_pListenPort);
+            m_listener = new TcpListener(System.Net.IPAddress.Any, m_pListenPort);
             m_listener.Start();
             m_pokrenutServer = true;
 
@@ -74,7 +74,11 @@ namespace ZastitaInformacija
             }
             catch (ObjectDisposedException)
             {
-
+                // normalno pri gasenju
+            }
+            catch (SocketException)
+            {
+                // normalno pri gasenju
             }
         }
 
@@ -178,7 +182,11 @@ namespace ZastitaInformacija
             }
             catch (ObjectDisposedException)
             {
-                // ocekivano
+                // ocekivano pri gasenju
+            }
+            catch (SocketException)
+            {
+                // ocekivano pri gasenju
             }
             catch (Exception e)
             {
