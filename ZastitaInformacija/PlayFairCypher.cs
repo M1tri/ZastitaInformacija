@@ -249,7 +249,7 @@ namespace ZastitaInformacija
             string tesktNormalized = NormalizeText(tekst);
             byte[] encrypted = Encrypt(data, fileMetaData);
             byte[]? hashBytes = hash ? 
-                SHA1.Hash(Encoding.UTF8.GetBytes(tesktNormalized)) : null;
+                SHA1.Hash(encrypted) : null;
 
             string dir = Path.GetDirectoryName(filePath)!;
 

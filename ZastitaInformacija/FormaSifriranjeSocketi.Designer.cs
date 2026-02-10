@@ -385,6 +385,7 @@
             Controls.Add(tableLayoutPanel6);
             Name = "FormaSifriranjeSocketi";
             Text = "FormaSifriranjeSocketi";
+            FormClosing += FormaSifriranjeSocketi_FormClosing;
             groupBox1.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();

@@ -13,6 +13,7 @@ namespace ZastitaInformacija
         protected uint[] S;
         protected const int runde = 20;
         protected string extension = ".rc6";
+        protected string algo_name = "RC6";
 
         public RC6(byte[] key) {
             KeySchedule(key);
@@ -27,11 +28,12 @@ namespace ZastitaInformacija
                 OriginalFileName = Path.GetFileName(filePath),
                 FileSize = data.Length,
                 CreationTime = DateTime.Now,
-                EncryptionAlgorithm = "RC6",
-                HashAlgorithm = hash ? "SHA1" : ""
+                EncryptionAlgorithm = algo_name,
+                HashAlgorithm = hash ? "SHA-1" : ""
             };
 
             byte[] encrypted = Encrypt(data, fileMetaData);
+            
             byte[] hashBytes = SHA1.Hash(encrypted);
 
             string dir = Path.GetDirectoryName(filePath)!;
@@ -113,7 +115,7 @@ namespace ZastitaInformacija
                 string json = Encoding.UTF8.GetString(metaData);
                 fileMetaData = JsonSerializer.Deserialize<FileMetaData>(json)!;
 
-                if (fileMetaData.HashAlgorithm == "SHA1")
+                if (fileMetaData.HashAlgorithm == "SHA-1")
                 {
                     int len = 20;
                     hashBytes = br.ReadBytes(len);
@@ -131,6 +133,7 @@ namespace ZastitaInformacija
                 if (Encoding.UTF8.GetString(newHash) != Encoding.UTF8.GetString(hashBytes!))
                     throw new CypherException("Hash se ne poklapa");
             }
+
             byte[] decrypted = Decrypt(data, fileMetaData);
 
             string dir = Path.GetDirectoryName(filePath)!;
@@ -193,7 +196,46 @@ namespace ZastitaInformacija
                 A = S[iS];
                 B = L[iL];
                 iS = (iS + 1) % S.Length;
-                iL = (iL+1) % L.Length;
+                iL = (iL + 1) % L.Length;
+            }
+        }
+        protected void KeySchedule2(byte[] key)
+        {
+            const uint Pw = 0xB7E15163;
+            const uint Qw = 0x9E3779B9;
+
+            int c = key.Length / 4;
+            if (key.Length % 4 != 0) c++;
+
+            uint[] L = new uint[c];
+            for (int i = 0; i < c; i++)
+            {
+                int length = Math.Min(4, key.Length - i * 4);
+                byte[] temp = new byte[4];
+                Array.Copy(key, i * 4, temp, 0, length);
+                L[i] = BitConverter.ToUInt32(temp, 0);
+            }
+
+            int t = 2 * runde + 4;
+            S = new uint[t];
+            S[0] = Pw;
+            for (int i = 1; i < t; i++)
+            {
+                S[i] = S[i - 1] + Qw;
+            }
+
+            uint A = 0;
+            uint B = 0;
+            int i_idx = 0;
+            int j_idx = 0;
+            int v = 3 * Math.Max(c, t);
+
+            for (int s = 1; s <= v; s++)
+            {
+                A = S[i_idx] = RotLeft(S[i_idx] + A + B, 3);
+                B = L[j_idx] = RotLeft(L[j_idx] + A + B, A + B);
+                i_idx = (i_idx + 1) % t;
+                j_idx = (j_idx + 1) % c;
             }
         }
 

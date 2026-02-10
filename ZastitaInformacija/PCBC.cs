@@ -14,6 +14,7 @@ namespace ZastitaInformacija
             this.IV = new byte[16];
             Array.Copy(IV, this.IV, 16);
             extension = ".pcbc";
+            algo_name = "RC6-PCBC";
         }
 
         public override byte[] Encrypt(byte[] data, FileMetaData fileMetaData)
