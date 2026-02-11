@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace ZastitaInformacija
 {
@@ -25,6 +26,7 @@ namespace ZastitaInformacija
         private FileSystemWatcher fileSystemWatcher;
 
         private string lastFileProcessed = "";
+        private DateTime lastWriteTime = DateTime.MinValue;
 
         public GlavnaForma()
         {
@@ -33,14 +35,17 @@ namespace ZastitaInformacija
             PodesiKomponente();
 
             string key = "MONARCHYMONARCHY";
+
+            txtSifra.Text = key;
+
             playFairCypher = new PlayFairCypher(key);
 
-            rc6 = new RC6(Encoding.UTF8.GetBytes(key));
+            rc6 = new RC6(key);
 
             byte[] iv = new byte[16];
             for (int i = 0; i < 16; i++)
                 iv[i] = (byte)i;
-            pcbc = new PCBC(Encoding.UTF8.GetBytes(key), iv);
+            pcbc = new PCBC(key);
 
             SelectedCypher = playFairCypher;
 
@@ -61,37 +66,7 @@ namespace ZastitaInformacija
 
         private void Sifriraj(string path, string outPath)
         {
-            try
-            {
-                SelectedCypher.EncryptFile(path, chkBoxHesiraj.Checked, outPath);
-            }
-            catch (CypherException ce)
-            {
-                MessageBox.Show(
-                    ce.Message,
-                    "Greška tokom ulazno/izlazne radnje",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            catch (IOException iox)
-            {
-                MessageBox.Show(
-                    iox.Message,
-                    "Greška tokom ulazno/izlazne radnje",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    ex.Message,
-                    "Greška tokom ulazno/izlazne radnje",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
+            SelectedCypher.EncryptFile(path, chkBoxHesiraj.Checked, outPath);
         }
 
         private void Desifriraj(string path)
@@ -234,8 +209,14 @@ namespace ZastitaInformacija
                 UpisiULog("Deaktivirano heširanje");
             }
         }
-        private void UpisiULog(string logMessage)
+        public void UpisiULog(string logMessage)
         {
+            if (logTextBox.InvokeRequired)
+            {
+                logTextBox.Invoke(new Action<string>(UpisiULog), logMessage);
+                return;
+            }
+
             string time = DateTime.Now.ToString();
             logTextBox.Text = logTextBox.Text + time + ": " + logMessage + "\n";
         }
@@ -256,7 +237,7 @@ namespace ZastitaInformacija
             if (radioRC6.Checked)
             {
                 SelectedCypher = rc6;
-                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp)|*.txt;*.png;*.jpg;*.jpeg;*.bmp";
+                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif";
 
                 UpisiULog("Aktivni algoritam heiširanja postavljen na RC6");
             }
@@ -267,7 +248,7 @@ namespace ZastitaInformacija
             if (radioPCBC.Checked)
             {
                 SelectedCypher = pcbc;
-                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp)|*.txt;*.png;*.jpg;*.jpeg;*.bmp";
+                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif";
 
                 UpisiULog("Aktivni algoritam heiširanja postavljen na PCBC");
             }
@@ -275,10 +256,9 @@ namespace ZastitaInformacija
 
         private void dugmeRucniRad_Click(object sender, EventArgs e)
         {
-            FormaRucnoSifriranje forma = new FormaRucnoSifriranje(playFairCypher, rc6, pcbc);
-            this.Hide();
+            FormaRucnoSifriranje forma = new FormaRucnoSifriranje(this);
 
-            forma.ShowDialog();
+            forma.Show();
             foreach (var logMsg in forma.log)
             {
                 logTextBox.Text += logMsg;
@@ -336,34 +316,49 @@ namespace ZastitaInformacija
                 this.Invoke(new Action(() => DodatFajl(source, e)));
             }
 
-            if (lastFileProcessed == e.FullPath)
+            if (lastFileProcessed == e.FullPath && (DateTime.Now - lastWriteTime).Milliseconds < 200)
             {
                 return;
             }
 
             if (chkBoxSifriraj.Checked)
             {
-                Sifriraj(e.FullPath, txtBoxIzlazniDir.Text);
+                try
+                {
+                    Sifriraj(e.FullPath, txtBoxIzlazniDir.Text);
 
-                string algo;
-                if (radioPlayfair.Checked)
-                    algo = "Playfair cypher";
-                else if (radioRC6.Checked)
-                    algo = "RC6";
-                else
-                    algo = "PCBC";
+                    string algo;
+                    if (radioPlayfair.Checked)
+                        algo = "Playfair cypher";
+                    else if (radioRC6.Checked)
+                        algo = "RC6";
+                    else
+                        algo = "PCBC";
 
-                string msg = $"Fajl sa lokacije {e.FullPath} je uspešno šifrovan algoritmom {algo} rezultujući fajl je na lokaciji {txtBoxIzlazniDir.Text}";
-                UpisiULog(msg);
-                MessageBox.Show(msg, "Uspešno", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+                    string hashed = "";
+                    if (chkBoxHesiraj.Checked)
+                    {
+                        hashed = "i heširan algoritmom SHA-1 ";
+                    }
 
-            if (chkBoxHesiraj.Checked)
-            {
-                MessageBox.Show("Cu hesiram " + e.FullPath);
+                    string msg = $"FSW: Fajl sa lokacije {e.FullPath} " +
+                        $"je uspešno šifrovan algoritmom {algo} " + hashed +
+                        $"rezultujući fajl je na lokaciji {txtBoxIzlazniDir.Text}";
+
+                    UpisiULog(msg);
+                }
+                catch (CypherException ce)
+                {
+                    UpisiULog($"FSW: Greška pri šifrovanju fajla {e.FullPath}: {ce.Message}");
+                }
+                catch (Exception ex)
+                {
+                    UpisiULog($"FSW: Greška pri obradi fajla: {ex.Message}");
+                }
             }
 
             lastFileProcessed = e.FullPath;
+            lastWriteTime = DateTime.Now;
         }
         private void GlavnaForma_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -379,8 +374,37 @@ namespace ZastitaInformacija
 
         private void dugmeRazmena_Click(object sender, EventArgs e)
         {
-            FormaSifriranjeSocketi forma = new FormaSifriranjeSocketi(playFairCypher, rc6, pcbc);
+            FormaSifriranjeSocketi forma = new FormaSifriranjeSocketi(this);
             forma.Show();
+        }
+
+        private void dugmePotvrdiSifru_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSifra.Text))
+            {
+                MessageBox.Show("Sifra ne može biti prazna!",
+                    "Upozorenje",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
+                return;
+            }
+
+            playFairCypher.Key = txtSifra.Text;
+            rc6.Key = txtSifra.Text;
+            pcbc.Key = txtSifra.Text;
+        }
+
+        private void dugmeOcistiLog_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(
+                "Da li ste sigurni da želite da očistite log",
+                "Potvrda",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                logTextBox.Text = "";
+            }
         }
     }
 }

@@ -8,13 +8,10 @@ namespace ZastitaInformacija
 {
     public class PCBC : RC6
     {
-        byte[] IV;
-        public PCBC(byte[] key, byte[] IV) : base(key)
+        public PCBC(string key) : base(key)
         {
-            this.IV = new byte[16];
-            Array.Copy(IV, this.IV, 16);
             extension = ".pcbc";
-            algo_name = "RC6-PCBC";
+            algo_name = "PCBC";
         }
 
         public override byte[] Encrypt(byte[] data, FileMetaData fileMetaData)
@@ -26,15 +23,28 @@ namespace ZastitaInformacija
                 data[i] = (byte)padding;
             }
 
-            byte[] encrypted = new byte[data.Length];
+            Random rnd = new Random();
+            byte[] IV = new byte[16];
+
+            for (int i = 0; i < 16; i++)
+                IV[i] = (byte)rnd.Next(); 
+
+            byte[] encrypted = new byte[data.Length+16];
+            Array.Copy(IV, 0, encrypted, 0, IV.Length);
+
             byte[] prevPlain = new byte[16];
             byte[] prevCipher = new byte[16];
+            
             Array.Copy(IV, prevCipher, 16);
 
             for (int i = 0; i < data.Length; i+=16)
             {
                 byte[] block = new byte[16];
                 Array.Copy(data, i, block, 0, 16);
+
+
+                byte[] oldPlain = new byte[16];
+                Array.Copy(block, oldPlain, 16);
 
                 for (int j = 0; j < 16; j++)
                 {
@@ -52,11 +62,11 @@ namespace ZastitaInformacija
                 for (int j = 0; j < 4; j++)
                 {
                     Array.Copy(BitConverter.GetBytes(uBlock[j]),
-                        0, encrypted, i + j * 4, 4);
+                        0, encrypted, 16 + i + j * 4, 4);
                 }
 
-                Array.Copy(block, prevPlain, 16);
-                Array.Copy(encrypted, i, prevCipher, 0, 16);
+                Array.Copy(oldPlain, prevPlain, 16);
+                Array.Copy(encrypted, 16 + i, prevCipher, 0, 16);
             }
 
             return encrypted;
@@ -67,9 +77,13 @@ namespace ZastitaInformacija
             byte[] decrypted = new byte[data.Length];
             byte[] prevPlain = new byte[16];
             byte[] prevCipher = new byte[16];
+
+            byte[] IV = new byte[16];
+            Array.Copy(data, 0, IV, 0, IV.Length);
+
             Array.Copy(IV, prevCipher, 16);
 
-            for (int i = 0; i < data.Length; i+= 16)
+            for (int i = 16; i < data.Length; i+= 16)
             {
                 byte[] block = new byte[16];
                 Array.Copy(data, i, block, 0, 16);
@@ -93,7 +107,7 @@ namespace ZastitaInformacija
                     block[j] ^= (byte)(prevPlain[j] ^ prevCipher[j]);
                 }
 
-                Array.Copy(block, 0, decrypted, i, 16);
+                Array.Copy(block, 0, decrypted, i-16, 16);
 
                 Array.Copy(block, prevPlain, 16);
                 Array.Copy(data, i, prevCipher, 0, 16);

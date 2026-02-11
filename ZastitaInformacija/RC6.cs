@@ -15,8 +15,17 @@ namespace ZastitaInformacija
         protected string extension = ".rc6";
         protected string algo_name = "RC6";
 
-        public RC6(byte[] key) {
-            KeySchedule(key);
+        public string Key { set
+            {
+                byte[] hashed = SHA1.Hash(Encoding.UTF8.GetBytes(value));
+                byte[] key = new byte[16];
+                Array.Copy(hashed, key, 16);
+                KeySchedule(key);
+            } 
+        }
+
+        public RC6(string key) {
+            Key = key;
         }
 
         public string EncryptFile(string filePath, bool hash = false, string? outDir = null)
@@ -190,55 +199,13 @@ namespace ZastitaInformacija
 
             for (int k = 0; k < v; k++)
             {
-                S[iS] = RotLeft(S[iS] + A + B, 3);
-                L[iL] = RotLeft(L[iL] + A + B, A + B);
+                A = S[iS] = RotLeft(S[iS] + A + B, 3);
+                B = L[iL] = RotLeft(L[iL] + A + B, A + B);
 
-                A = S[iS];
-                B = L[iL];
                 iS = (iS + 1) % S.Length;
                 iL = (iL + 1) % L.Length;
             }
         }
-        protected void KeySchedule2(byte[] key)
-        {
-            const uint Pw = 0xB7E15163;
-            const uint Qw = 0x9E3779B9;
-
-            int c = key.Length / 4;
-            if (key.Length % 4 != 0) c++;
-
-            uint[] L = new uint[c];
-            for (int i = 0; i < c; i++)
-            {
-                int length = Math.Min(4, key.Length - i * 4);
-                byte[] temp = new byte[4];
-                Array.Copy(key, i * 4, temp, 0, length);
-                L[i] = BitConverter.ToUInt32(temp, 0);
-            }
-
-            int t = 2 * runde + 4;
-            S = new uint[t];
-            S[0] = Pw;
-            for (int i = 1; i < t; i++)
-            {
-                S[i] = S[i - 1] + Qw;
-            }
-
-            uint A = 0;
-            uint B = 0;
-            int i_idx = 0;
-            int j_idx = 0;
-            int v = 3 * Math.Max(c, t);
-
-            for (int s = 1; s <= v; s++)
-            {
-                A = S[i_idx] = RotLeft(S[i_idx] + A + B, 3);
-                B = L[j_idx] = RotLeft(L[j_idx] + A + B, A + B);
-                i_idx = (i_idx + 1) % t;
-                j_idx = (j_idx + 1) % c;
-            }
-        }
-
         protected uint RotLeft(uint x, uint y)
         {
             return (x << (int)(y & 31)) | (x >> (int)(32 - (y & 31)));

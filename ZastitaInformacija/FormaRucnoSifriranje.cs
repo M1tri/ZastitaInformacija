@@ -20,12 +20,22 @@ namespace ZastitaInformacija
         private string ofdFilter = "Text fajlovi (*.txt)|*.txt";
         public List<string> log;
 
-        public FormaRucnoSifriranje(PlayFairCypher playFairCypher, RC6 rc6Cypher, PCBC pcbcCypher)
+        private GlavnaForma parent;
+
+        public FormaRucnoSifriranje(GlavnaForma parentForm)
         {
             InitializeComponent();
-            this.playFairCypher = playFairCypher;
-            this.rc6Cypher = rc6Cypher;
-            this.pcbcCypher = pcbcCypher;
+
+            parent = parentForm;
+
+            string initialSifra = "MONARCHY";
+
+            this.playFairCypher = new PlayFairCypher(initialSifra);
+            this.rc6Cypher = new RC6(initialSifra);
+            byte[] iv = new byte[16];
+            this.pcbcCypher = new PCBC(initialSifra);
+
+            txtBoxSifra.Text = initialSifra;
 
             selectedCypher = playFairCypher;
             log = new List<string>();
@@ -38,7 +48,7 @@ namespace ZastitaInformacija
                 if (radioPlayfair.Checked)    
                     ofdFilter = "Text fajlovi (*.txt)|*.txt";
                 else
-                    ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp)|*.txt;*.png;*.jpg;*.jpeg;*.bmp";
+                    ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif";
             }
             else
             {
@@ -112,6 +122,21 @@ namespace ZastitaInformacija
 
         private void dugmeBirajFajl_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(txtBoxSifra.Text))
+            {
+                MessageBox.Show(
+                    "Sifra ne može biti prazna!",
+                    "Upozorenje",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
+                return;
+            }
+
+            playFairCypher.Key = txtBoxSifra.Text;
+            rc6Cypher.Key = txtBoxSifra.Text;
+            pcbcCypher.Key = txtBoxSifra.Text;
+
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = ofdFilter;
 
@@ -137,107 +162,127 @@ namespace ZastitaInformacija
                     return;
                 }
 
+                string algo;
+                if (radioPlayfair.Checked)
+                    algo = "Playfair cypher";
+                else if (radioRC6.Checked)
+                    algo = "RC6";
+                else
+                    algo = "PCBC";
+
                 if (radioSifriaj.Checked)
                 {
-                    Sifriraj(path, outPath);
+                    try
+                    {
+                        Sifriraj(path, outPath);
+                    }
+                    catch (CypherException ce)
+                    {
+                        MessageBox.Show(
+                            "Greška tokom enkriptovanja fajla",
+                            ce.Message,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+
+                        parent.UpisiULog($"Greška pri šifrovanju fajla {path}: {ce.Message}");
+                    }
+                    catch (IOException iox)
+                    {
+                        MessageBox.Show(
+                            "Greška tokom ulazno/izlazne radnje",
+                            iox.Message,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+
+                        parent.UpisiULog($"Greška pri šifrovanju fajla {path}: {iox.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                            "Greška",
+                            ex.Message,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+
+                        parent.UpisiULog($"Greška pri šifrovanju fajla {path}: {ex.Message}");
+                    }
                 }
                 else
                 {
-                    Desifriraj(path, outPath);
+                    try
+                    {
+                        Desifriraj(path, outPath);
+                    }
+                    catch (CypherException ce)
+                    {
+                        MessageBox.Show(
+                            ce.Message,
+                            "Greška tokom dekriptovanja fajla",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+
+                        parent.UpisiULog($"Greška pri dešifrovanju fajla {path}: {ce.Message}");
+                    }
+                    catch (IOException iox)
+                    {
+                        MessageBox.Show(
+                            iox.Message,
+                            "Greška tokom ulazno/izlazne radnje",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+
+                        parent.UpisiULog($"Greška pri dešifrovanju fajla {path}: {iox.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(
+                            ex.Message,
+                            "Greška",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+
+                        parent.UpisiULog($"Greška pri dešifrovanju fajla {path}: {ex.Message}");
+                    }
                 }
             }
         }
 
         private void Sifriraj(string path, string outPath)
         {
-            try
-            {
-                string outFile = selectedCypher.EncryptFile(path, chkBoxHash.Checked, outPath);
-                string algo;
-                if (radioPlayfair.Checked)
-                    algo = "Playfair cypher";
-                else if (radioRC6.Checked)
-                    algo = "RC6";
-                else
-                    algo = "PCBC";
+            string outFile = selectedCypher.EncryptFile(path, chkBoxHash.Checked, outPath);
+            string algo;
+            if (radioPlayfair.Checked)
+                algo = "Playfair cypher";
+            else if (radioRC6.Checked)
+                algo = "RC6";
+            else
+                algo = "PCBC";
 
-                string msg = $"Fajl sa lokacije {path} je uspešno šifrovan algoritmom {algo} rezultujući fajl je na lokaciji {outFile}";
-                UpisiULog(msg);
-                MessageBox.Show(msg, "Uspešno", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (CypherException ce)
-            {
-                MessageBox.Show(
-                    "Greška tokom enkriptovanja fajla",
-                    ce.Message,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            catch (IOException iox)
-            {
-                MessageBox.Show(
-                    "Greška tokom ulazno/izlazne radnje",
-                    iox.Message,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "Greška",
-                    ex.Message,
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
+            string msg = $"Fajl sa lokacije {path} je uspešno šifrovan algoritmom {algo} rezultujući fajl je na lokaciji {outFile}";
+            parent.UpisiULog(msg);
+            MessageBox.Show(msg, "Uspešno", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void Desifriraj(string path, string outPath)
         {
-            try
-            {
-                string outFile = selectedCypher.DecryptFile(path, chkBoxHash.Checked, outPath);
-                string algo;
-                if (radioPlayfair.Checked)
-                    algo = "Playfair cypher";
-                else if (radioRC6.Checked)
-                    algo = "RC6";
-                else
-                    algo = "PCBC";
+            string outFile = selectedCypher.DecryptFile(path, chkBoxHash.Checked, outPath);
+            string algo;
+            if (radioPlayfair.Checked)
+                algo = "Playfair cypher";
+            else if (radioRC6.Checked)
+                algo = "RC6";
+            else
+                algo = "PCBC";
 
-                string msg = $"Fajl sa lokacije {path} je uspešno dešifrovan algoritmom {algo} rezultujući fajl je na lokaciji {outFile}";
-                UpisiULog(msg);
-                MessageBox.Show(msg, "Uspešno", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (CypherException ce)
-            {
-                MessageBox.Show(
-                    ce.Message,
-                    "Greška tokom dekriptovanja fajla",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            catch (IOException iox)
-            {
-                MessageBox.Show(
-                    iox.Message,
-                    "Greška tokom ulazno/izlazne radnje",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    ex.Message,
-                    "Greška",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
+            string msg = $"Fajl sa lokacije {path} je uspešno dešifrovan algoritmom {algo} rezultujući fajl je na lokaciji {outFile}";
+            parent.UpisiULog(msg);
+            MessageBox.Show(msg, "Uspešno", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

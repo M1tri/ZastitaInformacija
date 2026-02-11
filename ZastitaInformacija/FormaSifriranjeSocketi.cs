@@ -15,11 +15,16 @@ namespace ZastitaInformacija
 {
     public partial class FormaSifriranjeSocketi : Form
     {
-        Cypher selectedCypher;
-        private PlayFairCypher playFairCypher;
-        private RC6 rc6Cypher;
-        private PCBC pcbcCypher;
+        Cypher selectedCypherClient;
+
+        private PlayFairCypher playFairCypherClient;
+        private RC6 rc6CypherClient;
+        private PCBC pcbcCypherClient;
         private string m_encryptionAlgo;
+
+        private PlayFairCypher playFairCypherServer;
+        private RC6 rc6CypherServer;
+        private PCBC pcbcCypherServer;
 
         TcpListener m_listener;
         CancellationTokenSource m_cts;
@@ -34,31 +39,42 @@ namespace ZastitaInformacija
 
         private string ofdFilter = "Text fajlovi (*.txt)|*.txt";
 
-        public FormaSifriranjeSocketi(PlayFairCypher playFairCypher, RC6 rc6Cypher, PCBC pcbcCypher)
-        {
-            this.playFairCypher = playFairCypher;
-            this.rc6Cypher = rc6Cypher;
-            this.pcbcCypher = pcbcCypher;
+        private GlavnaForma parent;
 
-            this.selectedCypher = this.playFairCypher;
+        public FormaSifriranjeSocketi(GlavnaForma parentForm)
+        {
+            parent = parentForm;
+
+            string initalSifra = "MONARCHY";
+            this.playFairCypherClient = new PlayFairCypher(initalSifra);
+            this.rc6CypherClient = new RC6(initalSifra);
+
+            byte[] iv = new byte[16];
+            this.pcbcCypherClient = new PCBC(initalSifra);
+
+            this.playFairCypherServer = new PlayFairCypher(initalSifra);
+            this.rc6CypherServer = new RC6(initalSifra);
+
+            this.pcbcCypherServer = new PCBC(initalSifra);
+
+            this.selectedCypherClient = this.playFairCypherClient;
             m_encryptionAlgo = "Playfair";
 
             InitializeComponent();
+
+            txtSifra.Text = initalSifra;
+            txtSifraClient.Text = initalSifra;
         }
 
         private async void PokreniServer()
         {
             m_cts = new CancellationTokenSource();
 
-            if (!System.Net.IPAddress.TryParse(m_IpListen, out System.Net.IPAddress? ip))
-            {
-                MessageBox.Show("Nevalidan IP");
-                return;
-            }
-
             m_listener = new TcpListener(System.Net.IPAddress.Any, m_pListenPort);
             m_listener.Start();
             m_pokrenutServer = true;
+
+            parent.UpisiULog($"Server uspešno pokrenut na portu {m_pListenPort}");
 
             try
             {
@@ -97,6 +113,8 @@ namespace ZastitaInformacija
             }
 
             m_pokrenutServer = false;
+
+            parent.UpisiULog("Server ugašen");
         }
 
         private async Task<byte[]> ReadExactlyAsync(NetworkStream ns,
@@ -132,7 +150,13 @@ namespace ZastitaInformacija
                     string json = Encoding.UTF8.GetString(metaData);
                     FileMetaData fileMetaData = JsonSerializer.Deserialize<FileMetaData>(json)!;
 
-                    byte[] ExpectedHash = await ReadExactlyAsync(ns, 20, ct);
+                    byte[] ExpectedHash = new byte[0];
+                    bool hasHash = false;
+                    if (fileMetaData.HashAlgorithm == "SHA-1")
+                    {
+                        ExpectedHash = await ReadExactlyAsync(ns, 20, ct);
+                        hasHash = true;
+                    }
 
                     List<byte> data = new List<byte>();
                     byte[] buffer = new byte[1024];
@@ -147,23 +171,25 @@ namespace ZastitaInformacija
                     }
 
                     byte[] encryptedData = data.ToArray();
-                    byte[] hash = SHA1.Hash(encryptedData);
+                    if (hasHash)
+                    {
+                        byte[] hash = SHA1.Hash(encryptedData);
+                        if (!hash.SequenceEqual(ExpectedHash))
+                            throw new Exception("Hash se ne poklapa!");
+                    }
 
-                    if (!hash.SequenceEqual(ExpectedHash))
-                        throw new Exception("Hash se ne poklapa!");
-                    
                     Cypher cypher;
                     if (fileMetaData.EncryptionAlgorithm == "Playfair")
                     {
-                        cypher = playFairCypher;
+                        cypher = playFairCypherServer;
                     }
                     else if (fileMetaData.EncryptionAlgorithm == "RC6")
                     {
-                        cypher = rc6Cypher;
+                        cypher = rc6CypherServer;
                     }
                     else if (fileMetaData.EncryptionAlgorithm == "PCBC")
                     {
-                        cypher = pcbcCypher;
+                        cypher = pcbcCypherServer;
                     }
                     else
                     {
@@ -178,6 +204,11 @@ namespace ZastitaInformacija
                     string outPath = Path.Combine(serverDir, fileMetaData.OriginalFileName);
 
                     File.WriteAllBytes(outPath, decrypted);
+
+                    parent.UpisiULog(
+                        $"Uspešno primljen i dešifrovan fajl {fileMetaData.OriginalFileName} " + 
+                        $"algoritmom {fileMetaData.EncryptionAlgorithm} " +
+                        $"rezultujući fajl je na lokaciji {outPath}");
                 }
             }
             catch (ObjectDisposedException)
@@ -188,9 +219,21 @@ namespace ZastitaInformacija
             {
                 // ocekivano pri gasenju
             }
+            catch (CypherException se)
+            {
+                parent.UpisiULog($"Greška pri dešifrovanju pristiglog fajla: {se.Message}");
+                MessageBox.Show("Došlo je do greške pri obradi pristiglog paketa",
+                                "Greška",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                parent.UpisiULog($"Greška pri obradi pristiglog paketa: {e.Message}");
+                MessageBox.Show("Došlo je do greške pri obradi pristiglog paketa",
+                                "Greška",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
             }
             finally
             {
@@ -212,54 +255,90 @@ namespace ZastitaInformacija
                 EncryptionAlgorithm = m_encryptionAlgo
             };
 
-            byte[] encrypted = selectedCypher.Encrypt(data, fileMetaData);
-            byte[] hash = SHA1.Hash(encrypted);
-
-            string json = fileMetaData.ToJson();
-            byte[] metaData = Encoding.UTF8.GetBytes(json);
-
-            using (TcpClient client = new TcpClient())
+            try
             {
-                await client.ConnectAsync(m_SendIP, m_pSendPort);
+                byte[] encrypted = selectedCypherClient.Encrypt(data, fileMetaData);
+                byte[] hash = SHA1.Hash(encrypted);
 
-                using (NetworkStream stream = client.GetStream())
+                string json = fileMetaData.ToJson();
+                byte[] metaData = Encoding.UTF8.GetBytes(json);
+
+                using (TcpClient client = new TcpClient())
                 {
-                    byte[] len = BitConverter.GetBytes(metaData.Length);
-                    await stream.WriteAsync(len);
-                    await stream.WriteAsync(metaData);
-                    await stream.WriteAsync(hash);
-                    await stream.WriteAsync(encrypted);
+                    await client.ConnectAsync(m_SendIP, m_pSendPort);
+
+                    using (NetworkStream stream = client.GetStream())
+                    {
+                        byte[] len = BitConverter.GetBytes(metaData.Length);
+                        await stream.WriteAsync(len);
+                        await stream.WriteAsync(metaData);
+                        await stream.WriteAsync(hash);
+                        await stream.WriteAsync(encrypted);
+                    }
                 }
+
+                parent.UpisiULog(
+                    $"Fajl {fileMetaData.OriginalFileName} sifrovan algoritmom {fileMetaData.EncryptionAlgorithm} " +
+                    $"poslat je na adresu {m_SendIP}:{m_pSendPort}");
+            }
+            catch (SocketException se)
+            {
+                parent.UpisiULog($"Neuspešna konekcija ka {m_SendIP}:{m_pSendPort}. Greška: {se.Message}");
+                MessageBox.Show("Ne može da se uspostavi konekcija sa serverom.",
+                                "Greška",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+            catch (CypherException ce)
+            {
+                parent.UpisiULog($"Greška pri šifrovanjua fajla {fileMetaData.OriginalFileName}: {ce.Message}");
+                MessageBox.Show("Došlo je do greške pri slanju fajla.",
+                                "Greška",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+            catch (Exception e)
+            {
+                parent.UpisiULog($"Greška pri slanju fajla: {e.Message}");
+                MessageBox.Show("Došlo je do greške pri slanju fajla.",
+                                "Greška",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
             }
         }
 
         private void dugmePokreniSrv_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtBoxIpRcv.Text))
-            {
-                MessageBox.Show("Upisi IP");
-                return;
-            }
-
-            m_IpListen = txtBoxIpRcv.Text;
-
             if (string.IsNullOrEmpty(txtBoxPortRcv.Text))
             {
-                MessageBox.Show("Upisi port");
+                MessageBox.Show(
+                    "Polje Port ne može biti prazno",
+                    "Upozorenje",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation
+                );
+
                 return;
             }
 
             if (!int.TryParse(txtBoxPortRcv.Text, out m_pListenPort))
             {
-                MessageBox.Show("Nevalidan port");
+                MessageBox.Show(
+                            "Uneti port nije validan",
+                            "Upozorenje",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation
+                        );
+
                 return;
             }
 
             dugmePokreniSrv.Enabled = false;
             dugmeUgasiSrv.Enabled = true;
 
-            txtBoxIpRcv.Enabled = false;
             txtBoxPortRcv.Enabled = false;
+            txtSifra.Enabled = false;
+            btnPotvrdi.Enabled = false;
 
             PokreniServer();
         }
@@ -269,8 +348,9 @@ namespace ZastitaInformacija
             dugmePokreniSrv.Enabled = true;
             dugmeUgasiSrv.Enabled = false;
 
-            txtBoxIpRcv.Enabled = true;
             txtBoxPortRcv.Enabled = true;
+            txtSifra.Enabled = true;
+            btnPotvrdi.Enabled = true;
 
             UgasiServer();
         }
@@ -279,26 +359,50 @@ namespace ZastitaInformacija
         {
             if (string.IsNullOrEmpty(txtBoxIPSend.Text))
             {
-                MessageBox.Show("IP send majmune lol");
+                MessageBox.Show(
+                    "Polje IP adresa ne može biti prazno",
+                    "Upozorenje",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation
+                );
+
                 return;
             }
             m_SendIP = txtBoxIPSend.Text;
 
             if (string.IsNullOrEmpty(txtBoxPortSend.Text))
             {
-                MessageBox.Show("Port send majmune lol");
+                MessageBox.Show(
+                            "Polje Port ne može biti prazno",
+                            "Upozorenje",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation
+                        );
+
                 return;
             }
 
             if (!int.TryParse(txtBoxPortSend.Text, out m_pSendPort))
             {
-                MessageBox.Show("Nevalidan port!");
+                MessageBox.Show(
+                        "Uneti port nije validan",
+                        "Upozorenje",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation
+                    );
+
                 return;
             }
 
             if (string.IsNullOrEmpty(txtBoxImeFajla.Text))
             {
-                MessageBox.Show("Fajl majmune lol");
+                MessageBox.Show(
+                            "Morate izabrati fajl za slanje",
+                            "Upozorenje",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation
+                        );
+
                 return;
             }
 
@@ -322,7 +426,7 @@ namespace ZastitaInformacija
         {
             if (radioPlayfair.Checked)
             {
-                selectedCypher = playFairCypher;
+                selectedCypherClient = playFairCypherClient;
                 ofdFilter = "Text fajlovi (*.txt)|*.txt";
                 m_encryptionAlgo = "Playfair";
             }
@@ -332,8 +436,8 @@ namespace ZastitaInformacija
         {
             if (radioRC6.Checked)
             {
-                selectedCypher = rc6Cypher;
-                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp)|*.txt;*.png;*.jpg;*.jpeg;*.bmp";
+                selectedCypherClient = rc6CypherClient;
+                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif";
                 m_encryptionAlgo = "RC6";
             }
         }
@@ -342,8 +446,8 @@ namespace ZastitaInformacija
         {
             if (radioPCBC.Checked)
             {
-                selectedCypher = pcbcCypher;
-                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp)|*.txt;*.png;*.jpg;*.jpeg;*.bmp";
+                selectedCypherClient = pcbcCypherClient;
+                ofdFilter = "Tekst i slike (*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.gif";
                 m_encryptionAlgo = "PCBC";
             }
         }
@@ -352,6 +456,42 @@ namespace ZastitaInformacija
         {
             if (m_pokrenutServer)
                 UgasiServer();
+        }
+
+        private void btnPotvrdi_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSifra.Text))
+            {
+                MessageBox.Show(
+                    "Sifra ne može biti prazna!",
+                    "Upozorenje",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
+                return;
+            }
+
+            playFairCypherServer.Key = txtSifra.Text;
+            rc6CypherServer.Key = txtSifra.Text;
+            pcbcCypherServer.Key = txtSifra.Text;
+        }
+
+        private void btnSifraClient_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSifraClient.Text))
+            {
+                MessageBox.Show(
+                    "Sifra ne može biti prazna!",
+                    "Upozorenje",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
+                return;
+            }
+
+            playFairCypherClient.Key = txtSifraClient.Text;
+            rc6CypherClient.Key = txtSifraClient.Text;
+            pcbcCypherClient.Key = txtSifraClient.Text;
         }
     }
 }

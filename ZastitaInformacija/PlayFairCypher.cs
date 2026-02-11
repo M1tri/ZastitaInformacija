@@ -17,7 +17,7 @@ namespace ZastitaInformacija
                 return m_key; 
             }
             set { 
-                m_key = value;
+                m_key = value.ToUpper();
                 UpdateMatricu(); 
             }
         }
